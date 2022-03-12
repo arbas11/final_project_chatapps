@@ -1,30 +1,40 @@
 .mainpages-container {
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
-  padding: 1em;
-  background-color: #524a4e;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    padding: 1em;
+    background-color: #3a374a;
+    background-image: linear-gradient(#36374b, #212742);
 }
+
 .mainpages-components {
-  display: flex;
-  flex-direction: column;
-  border-radius: 20px;
-  width: 100%;
-  height: 100%;
-  background-color: #1c658c;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    width: 100%;
+    height: 100%;
+    background-color: #14101d;
+    background-image: linear-gradient(#151223, #181222);
 }
+
 .app-component-container {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr 1.5fr 1fr;
-  border-radius: 20px;
-  flex-grow: 1;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr 1.5fr 1fr;
+    border-radius: 20px;
+    flex-grow: 1;
 }
-.app-component-container > * {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+
+.app-component-container>* {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar {
+
+
 }
