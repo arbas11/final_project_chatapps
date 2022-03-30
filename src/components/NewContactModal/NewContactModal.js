@@ -1,41 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import "../../styles/bootstrap.scss";
 import "../chatList/chatList.scss";
-import { addContact } from "../../database/contacts";
+import { addContactToUser } from "../../service/contact";
 
 function NewContactModal({
   openNewContactModal,
   setOpenNewContactModal,
   userPhonenum,
-  contactDisplayName,
-  setContactDisplayName,
-  contactToAdd,
-  setContactToAdd,
 }) {
-  const addNewContact = (userNumber, contactNumber, contactName) => {
-    addContact(userNumber, contactNumber, contactName);
-    setOpenNewContactModal(false);
-    setContactDisplayName("");
-    setContactToAdd("");
+  const [contactToAdd, setContactToAdd] = useState("");
+  const [contactDisplayName, setContactDisplayName] = useState("");
+
+  const addNewContact = async (userNumber, contactNumber, contactName) => {
+    if (contactNumber && contactName) {
+      await addContactToUser(userNumber, contactNumber, contactName);
+      setOpenNewContactModal(false);
+      setContactDisplayName("");
+      setContactToAdd("");
+    }
   };
+
   return (
     <Modal
       isOpen={openNewContactModal}
       toggle={() => setOpenNewContactModal(!openNewContactModal)}
-      external={
-        <button
-          className="close"
-          onClick={function noRefCheck() {}}
-          style={{ position: "absolute", right: "15px", top: "15px" }}
-        >
-          ×
-        </button>
-      }
     >
       <ModalHeader>Add new contact</ModalHeader>
       <ModalBody>
-        <div className="search_wrap">
+        <div className="search_wrap new-contact-input">
           <input
             type="text"
             placeholder="Contact number"
@@ -44,10 +37,10 @@ function NewContactModal({
             value={contactToAdd}
           />
         </div>
-        <div className="search_wrap">
+        <div className="search_wrap new-contact-input">
           <input
             type="text"
-            placeholder="Display name"
+            placeholder="Contact name"
             required
             onChange={(e) => setContactDisplayName(e.target.value)}
             value={contactDisplayName}
@@ -59,11 +52,14 @@ function NewContactModal({
           onClick={() => {
             addNewContact(userPhonenum, contactToAdd, contactDisplayName);
           }}
-          className="btn"
+          className="btn btn-submit"
         >
           <span>Add new contact</span>
         </button>
-        <button onClick={() => setOpenNewContactModal(false)} className="btn">
+        <button
+          onClick={() => setOpenNewContactModal(false)}
+          className="btn btn-cancel"
+        >
           <span>Cancel</span>
         </button>
       </ModalFooter>

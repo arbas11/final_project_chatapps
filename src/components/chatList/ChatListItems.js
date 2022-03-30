@@ -1,7 +1,15 @@
 import React from "react";
 import Avatar from "./Avatar";
 
-function ChatListItems({ name, key, animationDelay, active, isOnline, image }) {
+function ChatListItems({
+  name,
+  image,
+  status,
+  isOnline,
+  key,
+  animationDelay,
+  active,
+}) {
   // const selectChat = (e) => {
   //   for (
   //     let index = 0;
@@ -16,13 +24,17 @@ function ChatListItems({ name, key, animationDelay, active, isOnline, image }) {
   return (
     <div style={{ animationDelay: `0.1` }} className={`chatlist__item`}>
       <Avatar
-        image={image ? image : "http://placehold.it/80x80"}
+        image={
+          image
+            ? image
+            : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-9..."
+        }
         isOnline={isOnline}
       />
 
       <div className="userMeta">
         <p>{name}</p>
-        <span className="activeTime">32 mins ago</span>
+        <span className="activeTime">{status}</span>
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ function UserProfile({ userLogin, selectedContact, contactSelected }) {
           <img
             src={
               contactSelected
-                ? selectedContact.contactImage
+                ? selectedContact.contactData.profilePic
                 : userLogin.profilePic
             }
             alt="profile"
@@ -21,7 +21,7 @@ function UserProfile({ userLogin, selectedContact, contactSelected }) {
         </div>
         <h4>
           {contactSelected
-            ? selectedContact.contactName
+            ? selectedContact.contactData.displayName
             : userLogin.displayName}
         </h4>
         <p>online</p>
@@ -42,7 +42,9 @@ function UserProfile({ userLogin, selectedContact, contactSelected }) {
         <div className="card__content">
           <div>status:</div>
           <div>
-            {contactSelected ? selectedContact.contactStatus : userLogin.status}
+            {contactSelected
+              ? selectedContact.contactData.status
+              : userLogin.status}
           </div>
         </div>
       </div>

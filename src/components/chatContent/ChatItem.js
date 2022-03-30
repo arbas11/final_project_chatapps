@@ -25,7 +25,7 @@ function ChatItem({
             </div>
           </div>
           <Avatar
-            isOnline="active"
+            isOnline={"active"}
             image={v.author === userPhonenum ? userImage : contactImage}
           />
         </div>

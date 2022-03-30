@@ -3,22 +3,6 @@ import "./App.css";
 import Nav from "./components/nav/Nav";
 import ChatBody from "./components/chatBody/ChatBody";
 import LoginForm from "./components/login/LoginForm";
-import axios from "axios";
-
-// const test = (userPhonenum, displayName) => {
-//   axios
-//     .post("http://localhost:3001/api/user/createuser", {
-//       userPhonenum: userPhonenum,
-//       displayName: displayName,
-//     })
-//     .then(function (response) {
-//       console.log(response);
-//     })
-//     .catch(function (error) {
-//       console.log(error);
-//     });
-// };
-// test("08000", "budski");
 
 function App() {
   const [userPhonenum, setUserPhonenum] = useState("");
@@ -40,6 +24,7 @@ function App() {
         </>
       ) : (
         <LoginForm
+          userLogin={userLogin}
           setUserLogin={setUserLogin}
           userPhonenum={userPhonenum}
           setUserPhonenum={setUserPhonenum}

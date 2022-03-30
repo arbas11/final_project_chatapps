@@ -4,14 +4,12 @@ import "./chatContent.scss";
 import Avatar from "../chatList/Avatar";
 import ChatItem from "./ChatItem";
 import logo from "../../images/dibimbing.png";
-import { addContactHistory, findContactHistory } from "../../database/history";
-import { getOneContact } from "../../database/contacts";
+import { getContactHistory } from "../../service/history";
 
 function ChatContent({
   userLogin,
   userPhonenum,
   selectedContact,
-  setSelectedContact,
   contactSelected,
   socket,
 }) {
@@ -21,10 +19,8 @@ function ChatContent({
   const [receiveMsg, setReceiveMsg] = useState(0);
   const [sendMsg, setSendMsg] = useState(0);
 
-  useEffect(() => {}, [currentMessage]);
-
   useEffect(() => {
-    if (selectedContact.history) {
+    if (contactSelected) {
       scrollNewChat.current.scrollIntoView({
         behavior: "smooth",
         block: "nearest",
@@ -32,35 +28,50 @@ function ChatContent({
       });
     }
     return;
-  }, [currentMessage, socket, receiveMsg]);
+  }, [
+    currentMessage,
+    socket,
+    contactSelected,
+    receiveMsg,
+    selectedContact,
+    sendMsg,
+  ]);
+
+  const getHistory = async (userPhonenum, contactNumber) => {
+    const history = await getContactHistory(userPhonenum, contactNumber);
+    setMessageHist(history.data);
+  };
   useEffect(() => {
     if (contactSelected) {
-      const newData = getOneContact(
-        userPhonenum,
-        selectedContact.contactNumber
-      );
-      setSelectedContact(newData);
-      if (selectedContact.history) {
-        const history = findContactHistory(
-          userPhonenum,
-          selectedContact.contactNumber
-        );
-        setMessageHist(history);
-      }
+      getHistory(userPhonenum, selectedContact.contactNumber);
     }
-  }, [selectedContact, socket, messageHist, sendMsg]);
+  }, [contactSelected, selectedContact, userPhonenum]);
 
   useEffect(() => {
-    socket.on("receive-message", (data) => {
-      addContactHistory(data.recepient, data.author, data);
-      setReceiveMsg((prev) => setReceiveMsg(prev + 1));
-    });
-    return () => {
-      socket.off("receive-message", (data) => {
-        console.log("dari use effect receive dalam off");
+    if (contactSelected) {
+      socket.on("receive-message", (data) => {
+        const receiveMsgData = {
+          owner: data.contact,
+          contact: data.owner,
+          author: data.author,
+          recepient: data.recepient,
+          message: data.message,
+          time: data.time,
+        };
+        if (data.author === selectedContact.contactNumber) {
+          console.log(selectedContact.contactNumber);
+          setMessageHist((prev) => {
+            setMessageHist([...prev, receiveMsgData]);
+          });
+        }
+
+        setReceiveMsg((prev) => setReceiveMsg(prev + 1));
       });
-    };
-  }, [socket]);
+      return () => {
+        socket.off("receive-message", (data) => {});
+      };
+    }
+  }, []);
 
   const time = () => {
     const date = new Date();
@@ -83,17 +94,17 @@ function ChatContent({
     if (currentMessage !== "") {
       const capsMsg = capitalise(currentMessage);
       const messageData = {
-        recepient: selectedContact.contactNumber,
+        owner: userPhonenum,
+        contact: selectedContact.contactNumber,
         author: userPhonenum,
+        recepient: selectedContact.contactNumber,
         message: capsMsg,
         time: time(),
       };
       await socket.emit("send-message", messageData);
-      addContactHistory(
-        userPhonenum,
-        selectedContact.contactNumber,
-        messageData
-      );
+      setMessageHist((prev) => {
+        setMessageHist([...prev, messageData]);
+      });
       setCurrentMessage("");
     }
   };
@@ -107,9 +118,13 @@ function ChatContent({
               <div className="current-chatting-user">
                 <Avatar
                   isOnline="active"
-                  image={selectedContact.contactImage}
+                  image={selectedContact.contactData.profilePic}
                 />
-                <p>{selectedContact.contactName}</p>
+                <p>
+                  {selectedContact.contactName
+                    ? selectedContact.contactName
+                    : selectedContact.contactData.displayName}
+                </p>
               </div>
             </div>
 
@@ -127,7 +142,7 @@ function ChatContent({
           </div>
         )}
       </div>
-      {selectedContact.history && (
+      {contactSelected && (
         <div className="content__body">
           <div className="chat__items">
             <div>
@@ -136,7 +151,7 @@ function ChatContent({
                 contactName={selectedContact.contactName}
                 animationDelay={0 + 1}
                 messageHist={messageHist}
-                contactImage={selectedContact.contactImage}
+                contactImage={selectedContact.contactData.profilePic}
                 userImage={userLogin.profilePic}
               />
             </div>

@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { getUserAllContacts } from "../../database/contacts";
 import "../../styles/bootstrap.scss";
 import "./chatList.scss";
 import ChatListItems from "./ChatListItems";
 import NewContactModal from "../NewContactModal/NewContactModal";
+import { getUserAllContactData } from "../../service/contact";
 
 function ChatList({ userPhonenum, setContactSelected, setSelectedContact }) {
   const [allContacts, setAllContacts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [contactToAdd, setContactToAdd] = useState("");
-  const [contactDisplayName, setContactDisplayName] = useState("");
   const [openNewContactModal, setOpenNewContactModal] = useState(false);
 
+  const getContacts = async (userNum) => {
+    const data = await getUserAllContactData(userNum);
+    setAllContacts(data);
+  };
   useEffect(() => {
-    setAllContacts(getUserAllContacts(userPhonenum));
-  }, [userPhonenum]);
+    if (userPhonenum) {
+      getContacts(userPhonenum);
+    }
+  }, [userPhonenum, openNewContactModal]);
 
-  // const addNewContact = (userNumber, contactNumber, contactName) => {
-  //   addContact(userNumber, contactNumber, contactName);
-  // };
   return (
     <div className="main__chatlist">
       <button onClick={() => setOpenNewContactModal(true)} className="btn">
@@ -29,10 +30,6 @@ function ChatList({ userPhonenum, setContactSelected, setSelectedContact }) {
         openNewContactModal={openNewContactModal}
         setOpenNewContactModal={setOpenNewContactModal}
         userPhonenum={userPhonenum}
-        contactDisplayName={contactDisplayName}
-        setContactDisplayName={setContactDisplayName}
-        contactToAdd={contactToAdd}
-        setContactToAdd={setContactToAdd}
       />
 
       <div className="chatlist__heading">
@@ -60,10 +57,12 @@ function ChatList({ userPhonenum, setContactSelected, setSelectedContact }) {
           .filter((v) => {
             if (searchTerm === "") {
               return v;
-            } else if (
-              v.contactName.toLowerCase().includes(searchTerm.toLowerCase())
-            ) {
-              return v;
+            } else {
+              return v.contactName
+                ? v.contactName
+                : v.contactData.displayName
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase());
             }
           })
           .map((v, index) => (
@@ -76,11 +75,14 @@ function ChatList({ userPhonenum, setContactSelected, setSelectedContact }) {
               >
                 <ChatListItems
                   index={index}
-                  name={v.contactName}
+                  name={
+                    v.contactName ? v.contactName : v.contactData.displayName
+                  }
+                  image={v.contactData.profilePic}
+                  status={v.contactData.status}
                   animationDelay={0 + 1}
                   active={false ? "active" : ""}
-                  isOnline={true ? "active" : ""}
-                  image={v.contactImage}
+                  isOnline={v.contactData.isOnline ? "active" : ""}
                 />
               </div>
             </div>
