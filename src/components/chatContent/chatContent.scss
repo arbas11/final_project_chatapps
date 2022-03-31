@@ -3,6 +3,7 @@
   padding: 20px 40px;
   max-width: 63%;
   border-right: 1px solid #ebe7fb;
+  max-height: 100%;
 }
 .content__header {
   padding-bottom: 15px;
@@ -35,8 +36,7 @@
   color: #000;
 }
 .content__body {
-  max-height: calc(100vh - calc(100vh / 2));
-  overflow: auto;
+  max-height: 100%;
 }
 .chat__item {
   display: flex;
@@ -66,6 +66,10 @@
   100% {
     transform: scale(1);
   }
+}
+.chat_show {
+  display: flex;
+  flex-direction: column-reverse;
 }
 .chat__item .avatar {
   margin-right: 0px;

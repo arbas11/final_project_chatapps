@@ -4,7 +4,9 @@ import "./chatContent.scss";
 import Avatar from "../chatList/Avatar";
 import ChatItem from "./ChatItem";
 import logo from "../../images/dibimbing.png";
-import { getContactHistory } from "../../service/history";
+import useHistoryQuery from "../../hooks/useHistory";
+import InfiniteScroll from "react-infinite-scroll-component";
+import useScrollToStart from "react-scroll-to-bottom/lib/hooks/useScrollToStart";
 
 function ChatContent({
   userLogin,
@@ -16,9 +18,25 @@ function ChatContent({
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageHist, setMessageHist] = useState([]);
   const scrollNewChat = useRef(null);
-  const [receiveMsg, setReceiveMsg] = useState(0);
   const [sendMsg, setSendMsg] = useState(0);
+  const [query, setQuery] = useState(10);
+  const [skip, setSkip] = useState(0);
+  const scrollToStart = useScrollToStart();
 
+  const { history, hasMore } = useHistoryQuery(
+    userPhonenum,
+    selectedContact.contactNumber,
+    query,
+    skip,
+    sendMsg
+  );
+  console.log("chat content rendering");
+
+  useEffect(() => {
+    if (contactSelected && selectedContact) {
+      setSkip(0);
+    }
+  });
   useEffect(() => {
     if (contactSelected) {
       scrollNewChat.current.scrollIntoView({
@@ -28,50 +46,17 @@ function ChatContent({
       });
     }
     return;
-  }, [
-    currentMessage,
-    socket,
-    contactSelected,
-    receiveMsg,
-    selectedContact,
-    sendMsg,
-  ]);
+  }, [contactSelected, history, sendMsg, selectedContact]);
 
-  const getHistory = async (userPhonenum, contactNumber) => {
-    const history = await getContactHistory(userPhonenum, contactNumber);
-    setMessageHist(history.data);
-  };
-  useEffect(() => {
-    if (contactSelected) {
-      getHistory(userPhonenum, selectedContact.contactNumber);
-    }
-  }, [contactSelected, selectedContact, userPhonenum]);
-
-  useEffect(() => {
-    if (contactSelected) {
-      socket.on("receive-message", (data) => {
-        const receiveMsgData = {
-          owner: data.contact,
-          contact: data.owner,
-          author: data.author,
-          recepient: data.recepient,
-          message: data.message,
-          time: data.time,
-        };
-        if (data.author === selectedContact.contactNumber) {
-          console.log(selectedContact.contactNumber);
-          setMessageHist((prev) => {
-            setMessageHist([...prev, receiveMsgData]);
-          });
-        }
-
-        setReceiveMsg((prev) => setReceiveMsg(prev + 1));
-      });
-      return () => {
-        socket.off("receive-message", (data) => {});
-      };
-    }
-  }, []);
+  // const getHistory = async (userPhonenum, contactNumber) => {
+  //   const history = await getContactHistory(userPhonenum, contactNumber);
+  //   setMessageHist(history.data);
+  // };
+  // useEffect(() => {
+  //   if (contactSelected && selectedContact) {
+  //     getHistory(userPhonenum, selectedContact.contactNumber);
+  //   }
+  // });
 
   const time = () => {
     const date = new Date();
@@ -89,9 +74,18 @@ function ChatContent({
   const getMessage = (e) => {
     setCurrentMessage(e.target.value);
   };
-  const sendMessage = async () => {
-    setSendMsg((prev) => setSendMsg(prev + 1));
-    if (currentMessage !== "") {
+  const send = async (message) => {
+    await socket.emit("send-message", message);
+  };
+  useEffect(() => {
+    socket.on("receive-message", (data) => {});
+  }, [socket]);
+  const sendMessage = () => {
+    setSkip(0);
+    scrollToStart();
+    console.log("set skip dari send message", skip);
+    setSendMsg((prev) => prev + 1);
+    if (currentMessage !== "" && currentMessage !== " ") {
       const capsMsg = capitalise(currentMessage);
       const messageData = {
         owner: userPhonenum,
@@ -101,10 +95,7 @@ function ChatContent({
         message: capsMsg,
         time: time(),
       };
-      await socket.emit("send-message", messageData);
-      setMessageHist((prev) => {
-        setMessageHist([...prev, messageData]);
-      });
+      send(messageData);
       setCurrentMessage("");
     }
   };
@@ -145,20 +136,44 @@ function ChatContent({
       {contactSelected && (
         <div className="content__body">
           <div className="chat__items">
-            <div>
-              <ChatItem
-                userPhonenum={userPhonenum}
-                contactName={selectedContact.contactName}
-                animationDelay={0 + 1}
-                messageHist={messageHist}
-                contactImage={selectedContact.contactData.profilePic}
-                userImage={userLogin.profilePic}
-              />
+            <div ref={scrollNewChat}></div>
+            <div
+              id="scrollableDiv"
+              style={{
+                height: 300,
+                overflow: "auto",
+                display: "flex",
+                flexDirection: "column-reverse",
+              }}
+            >
+              {/*Put the scroll bar always on the bottom*/}
+              <InfiniteScroll
+                dataLength={history.length}
+                next={() => setSkip((prev) => prev + 10)}
+                style={{ display: "flex", flexDirection: "column-reverse" }}
+                inverse={true} //
+                hasMore={hasMore}
+                loader={<h4>Loading...</h4>}
+                scrollableTarget="scrollableDiv"
+              >
+                <ChatItem
+                  sendMsg={sendMsg}
+                  userPhonenum={userPhonenum}
+                  selectedContact={selectedContact}
+                  contactNumber={selectedContact.contactNumber}
+                  contactName={selectedContact.contactName}
+                  animationDelay={0 + 1}
+                  history={history}
+                  setMessageHist={setMessageHist}
+                  contactImage={selectedContact.contactData.profilePic}
+                  userImage={userLogin.profilePic}
+                />
+              </InfiniteScroll>
             </div>
           </div>
-          <div ref={scrollNewChat}></div>
         </div>
       )}
+
       {contactSelected && (
         <div className="content__footer">
           <div className="sendNewMessage">

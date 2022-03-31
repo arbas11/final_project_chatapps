@@ -4,14 +4,14 @@ import Avatar from "../chatList/Avatar";
 function ChatItem({
   animationDelay,
   userPhonenum,
-  messageHist,
+  history,
   contactImage,
   contactName,
   userImage,
 }) {
   return (
     <>
-      {messageHist.map((v, index) => (
+      {history.map((v, index) => (
         <div
           key={index}
           style={{ animationDelay: `0.8s` }}
@@ -25,7 +25,7 @@ function ChatItem({
             </div>
           </div>
           <Avatar
-            isOnline={"active"}
+            isOnline="active"
             image={v.author === userPhonenum ? userImage : contactImage}
           />
         </div>
