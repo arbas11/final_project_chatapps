@@ -48,6 +48,7 @@ function ChatList({
         data={{
           name: contactAddData.name,
           number: contactAddData.number,
+          tittle: "update",
         }}
       />
       <div className="chatlist__heading">

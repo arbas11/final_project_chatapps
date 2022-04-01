@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import logo from "./../../images/dibimbing.png";
 import io from "socket.io-client";
 import { createUser, getUserByPhoneNum } from "../../service/user";
+import { updateIsLogin } from "../../service/auth";
 
 function LoginForm({
   setUserLogin,
@@ -39,6 +40,7 @@ function LoginForm({
       if (userPhonenum !== " ") {
         getUser(userPhonenum);
         setSocket(io("http://localhost:3001", { query: { userPhonenum } }));
+        updateIsLogin(userPhonenum);
       }
     }
   };
@@ -47,6 +49,7 @@ function LoginForm({
       if (userPhonenum !== " ") {
         createUserFunc(userPhonenum, displayName);
         setSocket(io("http://localhost:3001", { query: { userPhonenum } }));
+        updateIsLogin(userPhonenum);
       }
     }
   };

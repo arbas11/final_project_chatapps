@@ -93,7 +93,9 @@ function ChatContent({
             <div className="blocks">
               <div className="current-chatting-user">
                 <Avatar
-                  isOnline="active"
+                  isOnline={
+                    selectedContact.contactData.isOnline ? "active" : ""
+                  }
                   image={selectedContact.contactData.profilePic}
                 />
                 <p>

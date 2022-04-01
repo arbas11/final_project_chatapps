@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./App.css";
+import "./App.scss";
 import Nav from "./components/nav/Nav";
 import ChatBody from "./components/chatBody/ChatBody";
 import LoginForm from "./components/login/LoginForm";
@@ -9,17 +9,21 @@ function App() {
   const [userLogin, setUserLogin] = useState({});
   const [chatRoom, setChatRoom] = useState(false);
   const [socket, setSocket] = useState();
+  const [contactSelected, setContactSelected] = useState(false);
 
   return (
     <div className="__main">
       {chatRoom ? (
         <>
-          <Nav />
+          <Nav setContactSelected={setContactSelected} />
           <ChatBody
             userPhonenum={userPhonenum}
             userLogin={userLogin}
+            setUserLogin={setUserLogin}
             socket={socket}
             setSocket={setSocket}
+            contactSelected={contactSelected}
+            setContactSelected={setContactSelected}
           />
         </>
       ) : (

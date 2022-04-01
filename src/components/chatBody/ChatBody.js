@@ -1,12 +1,18 @@
 import React, { useState } from "react";
-import "./chatBody.css";
+import "./chatBody.scss";
 import ChatList from "../chatList/ChatList";
 import ChatContent from "../chatContent/ChatContent";
 import UserProfile from "../userProfile/UserProfile";
 
-function ChatBody({ userPhonenum, userLogin, socket }) {
+function ChatBody({
+  userPhonenum,
+  userLogin,
+  setUserLogin,
+  socket,
+  contactSelected,
+  setContactSelected,
+}) {
   const [selectedContact, setSelectedContact] = useState({});
-  const [contactSelected, setContactSelected] = useState(false);
 
   return (
     <div className="main__chatbody">
@@ -26,6 +32,7 @@ function ChatBody({ userPhonenum, userLogin, socket }) {
       />
       <UserProfile
         userLogin={userLogin}
+        setUserLogin={setUserLogin}
         selectedContact={selectedContact}
         setSelectedContact={setSelectedContact}
         contactSelected={contactSelected}

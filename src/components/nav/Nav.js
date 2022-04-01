@@ -1,11 +1,11 @@
 import React from "react";
-import "./nav.css";
+import "./nav.scss";
 import logo from "./../../images/dibimbing.png";
 
-function Nav() {
+function Nav({ setContactSelected }) {
   return (
     <div className="nav">
-      <div className="nav__blocks">
+      <div onClick={() => setContactSelected(false)} className="nav__blocks">
         <img src={logo} alt="logo dibimbing"></img>
       </div>
       <div className="nav__blocks"></div>
