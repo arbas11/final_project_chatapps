@@ -90,3 +90,11 @@
 .profile__card.open .card__header i:before {
   content: "\f106";
 }
+.edit-contact{
+  text-align: center;
+  color:dodgerblue !important;
+}
+.delete-contact{
+  text-align: center;
+  color: red !important;
+}

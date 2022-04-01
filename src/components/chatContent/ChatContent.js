@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import "./chatContent.scss";
 import Avatar from "../chatList/Avatar";
@@ -6,7 +6,7 @@ import ChatItem from "./ChatItem";
 import logo from "../../images/dibimbing.png";
 import useHistoryQuery from "../../hooks/useHistory";
 import InfiniteScroll from "react-infinite-scroll-component";
-import useScrollToStart from "react-scroll-to-bottom/lib/hooks/useScrollToStart";
+import ScrollToBottom from "react-scroll-to-bottom";
 
 function ChatContent({
   userLogin,
@@ -17,11 +17,9 @@ function ChatContent({
 }) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageHist, setMessageHist] = useState([]);
-  const scrollNewChat = useRef(null);
   const [sendMsg, setSendMsg] = useState(0);
   const [query, setQuery] = useState(10);
   const [skip, setSkip] = useState(0);
-  const scrollToStart = useScrollToStart();
 
   const { history, hasMore } = useHistoryQuery(
     userPhonenum,
@@ -30,23 +28,12 @@ function ChatContent({
     skip,
     sendMsg
   );
-  console.log("chat content rendering");
 
   useEffect(() => {
     if (contactSelected && selectedContact) {
       setSkip(0);
     }
   });
-  useEffect(() => {
-    if (contactSelected) {
-      scrollNewChat.current.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "start",
-      });
-    }
-    return;
-  }, [contactSelected, history, sendMsg, selectedContact]);
 
   // const getHistory = async (userPhonenum, contactNumber) => {
   //   const history = await getContactHistory(userPhonenum, contactNumber);
@@ -82,8 +69,6 @@ function ChatContent({
   }, [socket]);
   const sendMessage = () => {
     setSkip(0);
-    scrollToStart();
-    console.log("set skip dari send message", skip);
     setSendMsg((prev) => prev + 1);
     if (currentMessage !== "" && currentMessage !== " ") {
       const capsMsg = capitalise(currentMessage);
@@ -136,7 +121,6 @@ function ChatContent({
       {contactSelected && (
         <div className="content__body">
           <div className="chat__items">
-            <div ref={scrollNewChat}></div>
             <div
               id="scrollableDiv"
               style={{
@@ -151,23 +135,25 @@ function ChatContent({
                 dataLength={history.length}
                 next={() => setSkip((prev) => prev + 10)}
                 style={{ display: "flex", flexDirection: "column-reverse" }}
-                inverse={true} //
+                inverse={true}
                 hasMore={hasMore}
                 loader={<h4>Loading...</h4>}
                 scrollableTarget="scrollableDiv"
               >
-                <ChatItem
-                  sendMsg={sendMsg}
-                  userPhonenum={userPhonenum}
-                  selectedContact={selectedContact}
-                  contactNumber={selectedContact.contactNumber}
-                  contactName={selectedContact.contactName}
-                  animationDelay={0 + 1}
-                  history={history}
-                  setMessageHist={setMessageHist}
-                  contactImage={selectedContact.contactData.profilePic}
-                  userImage={userLogin.profilePic}
-                />
+                <ScrollToBottom>
+                  <ChatItem
+                    sendMsg={sendMsg}
+                    userPhonenum={userPhonenum}
+                    selectedContact={selectedContact}
+                    contactNumber={selectedContact.contactNumber}
+                    contactName={selectedContact.contactName}
+                    animationDelay={0 + 1}
+                    history={history}
+                    setMessageHist={setMessageHist}
+                    contactImage={selectedContact.contactData.profilePic}
+                    userImage={userLogin.profilePic}
+                  />
+                </ScrollToBottom>
               </InfiniteScroll>
             </div>
           </div>

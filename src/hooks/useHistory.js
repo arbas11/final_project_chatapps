@@ -27,11 +27,9 @@ export default function useHistoryQuery(
         page: skip,
       })
       .then((res) => {
-        console.log("res dalam use history", res.data);
         setHistory((prevHistory) => {
           return [...new Set([...prevHistory, ...res.data.map((h) => h)])];
         });
-        console.log("history dalam use history", history);
         setHasMore(res.data.length > 0);
         setLoading(false);
       })

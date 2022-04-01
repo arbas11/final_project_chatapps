@@ -1,10 +1,36 @@
 import React, { useState } from "react";
+import { deleteContact } from "../../service/contact";
+import AlertModal from "../alertModal/AlertModal";
 import "./userProfile.css";
 
-function UserProfile({ userLogin, selectedContact, contactSelected }) {
+function UserProfile({
+  userLogin,
+  selectedContact,
+  contactSelected,
+  setContactSelected,
+}) {
   const [toggeOpen, setToggleOpen] = useState(false);
+  const [error, setError] = useState(false);
+  const [openAlertDeleteModal, setOpenAlertDeleteModal] = useState(false);
+
   const toggleInfo = (e) => {
     setToggleOpen(!toggeOpen);
+  };
+
+  const handleDelete = (userNum, contactNum, userId) => {
+    deleteContact(userNum, contactNum, userId)
+      .then(function (response) {
+        setError(false);
+        setTimeout(() => {
+          setContactSelected(false);
+        }, 2000);
+      })
+      .catch(function (error) {
+        if (error) {
+          setError(true);
+        }
+      });
+    setOpenAlertDeleteModal(true);
   };
   return (
     <div className="main__userprofile">
@@ -47,6 +73,38 @@ function UserProfile({ userLogin, selectedContact, contactSelected }) {
               : userLogin.status}
           </div>
         </div>
+        {contactSelected && (
+          <>
+            <div className="card__content edit-contact">
+              <div>edit contact</div>
+            </div>
+            <div
+              onClick={() =>
+                handleDelete(
+                  userLogin.userPhonenum,
+                  selectedContact.contactNumber,
+                  selectedContact._id
+                )
+              }
+              className="card__content delete-contact"
+            >
+              <div>delete contact</div>
+              <AlertModal
+                openAlertModal={openAlertDeleteModal}
+                setOpenAlertModal={setOpenAlertDeleteModal}
+                message={
+                  error
+                    ? "Something went wrong, please try again"
+                    : "successfully delete contact!"
+                }
+                data={{
+                  name: selectedContact.contactName,
+                  number: selectedContact.contactNumber,
+                }}
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

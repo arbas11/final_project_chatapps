@@ -4,11 +4,19 @@ import "./chatList.scss";
 import ChatListItems from "./ChatListItems";
 import NewContactModal from "../NewContactModal/NewContactModal";
 import { getUserAllContactData } from "../../service/contact";
+import AlertModal from "../alertModal/AlertModal";
 
-function ChatList({ userPhonenum, setContactSelected, setSelectedContact }) {
+function ChatList({
+  userPhonenum,
+  contactSelected,
+  setContactSelected,
+  setSelectedContact,
+}) {
   const [allContacts, setAllContacts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [openNewContactModal, setOpenNewContactModal] = useState(false);
+  const [modalAddSuccess, setModalAddSuccess] = useState(false);
+  const [contactAddData, setContactAddData] = useState({});
 
   const getContacts = async (userNum) => {
     const data = await getUserAllContactData(userNum);
@@ -18,7 +26,7 @@ function ChatList({ userPhonenum, setContactSelected, setSelectedContact }) {
     if (userPhonenum) {
       getContacts(userPhonenum);
     }
-  }, [userPhonenum, openNewContactModal]);
+  }, [userPhonenum, openNewContactModal, contactSelected]);
 
   return (
     <div className="main__chatlist">
@@ -30,8 +38,18 @@ function ChatList({ userPhonenum, setContactSelected, setSelectedContact }) {
         openNewContactModal={openNewContactModal}
         setOpenNewContactModal={setOpenNewContactModal}
         userPhonenum={userPhonenum}
+        setContactAddData={setContactAddData}
+        setModalAddSuccess={setModalAddSuccess}
       />
-
+      <AlertModal
+        openAlertModal={modalAddSuccess}
+        setOpenAlertModal={setModalAddSuccess}
+        message={"contact added"}
+        data={{
+          name: contactAddData.name,
+          number: contactAddData.number,
+        }}
+      />
       <div className="chatlist__heading">
         <h2>Contacts</h2>
         <button className="btn-nobg">

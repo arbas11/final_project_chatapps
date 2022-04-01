@@ -12,6 +12,7 @@ function ChatBody({ userPhonenum, userLogin, socket }) {
     <div className="main__chatbody">
       <ChatList
         userPhonenum={userPhonenum}
+        contactSelected={contactSelected}
         setSelectedContact={setSelectedContact}
         setContactSelected={setContactSelected}
       />
@@ -26,7 +27,9 @@ function ChatBody({ userPhonenum, userLogin, socket }) {
       <UserProfile
         userLogin={userLogin}
         selectedContact={selectedContact}
+        setSelectedContact={setSelectedContact}
         contactSelected={contactSelected}
+        setContactSelected={setContactSelected}
       />
     </div>
   );
