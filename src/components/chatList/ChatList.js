@@ -78,10 +78,8 @@ function ChatList({
               return v;
             } else {
               return v.contactName
-                ? v.contactName
-                : v.contactData.displayName
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase());
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase());
             }
           })
           .map((v, index) => (

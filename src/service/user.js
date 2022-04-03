@@ -18,9 +18,17 @@ export const createUser = async (userPhonenum, displayName) => {
 
 export const getUserByPhoneNum = async (userPhonenum) => {
   try {
-    const response = await axios.post(GETUSERURL, {
-      userPhonenum: userPhonenum,
-    });
+    const response = await axios.post(
+      GETUSERURL,
+      {
+        userPhonenum: userPhonenum,
+      },
+      {
+        headers: {
+          Authorization: "Bearer ",
+        },
+      }
+    );
     return response.data;
   } catch (e) {
     console.log("error dari service axios", e);

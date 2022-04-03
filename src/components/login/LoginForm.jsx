@@ -3,6 +3,7 @@ import logo from "./../../images/dibimbing.png";
 import io from "socket.io-client";
 import { createUser, getUserByPhoneNum } from "../../service/user";
 import { updateIsLogin } from "../../service/auth";
+import useUserAuth from "../../hooks/useAuth";
 
 function LoginForm({
   setUserLogin,
@@ -13,6 +14,8 @@ function LoginForm({
 }) {
   const [alreadyHaveAcc, setAlreadyHaveAcc] = useState(false);
   const [displayName, setDisplayName] = useState("");
+    const { signInWithGoogle, auth, token, userLogin } = useUserAuth();
+    console.log("user login dari login form", userLogin);
 
   const getUser = async () => {
     const response = await getUserByPhoneNum(userPhonenum);
@@ -87,13 +90,23 @@ function LoginForm({
             </>
           )}
           {alreadyHaveAcc ? (
+          <>
             <button className="login-submit" onClick={handleSignin}>
               Request OTP
             </button>
+                 <button className="login-with-google-btn" onClick={signInWithGoogle}>
+                 Sign in with Google
+               </button>
+          </>
           ) : (
+          <>
             <button className="login-submit" onClick={handleRegister}>
               Register
             </button>
+                  <button className="login-with-google-btn" onClick={signInWithGoogle}>
+                  Sign in with Google
+                </button>
+          </>
           )}
 
           {alreadyHaveAcc ? (

@@ -7,6 +7,7 @@ import logo from "../../images/dibimbing.png";
 import useHistoryQuery from "../../hooks/useHistory";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ScrollToBottom from "react-scroll-to-bottom";
+import { getContactHistory } from "../../service/history";
 
 function ChatContent({
   userLogin,
@@ -18,32 +19,33 @@ function ChatContent({
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageHist, setMessageHist] = useState([]);
   const [sendMsg, setSendMsg] = useState(0);
-  const [query, setQuery] = useState(10);
+  const [receiveMsg, setReceiveMsg] = useState(true);
+  // const [query, setQuery] = useState(10);
   const [skip, setSkip] = useState(0);
 
-  const { history, hasMore } = useHistoryQuery(
-    userPhonenum,
-    selectedContact.contactNumber,
-    query,
-    skip,
-    sendMsg
-  );
+  // const { history, hasMore } = useHistoryQuery(
+  //   userPhonenum,
+  //   selectedContact.contactNumber,
+  //   query,
+  //   skip,
+  //   sendMsg
+  // );
 
-  useEffect(() => {
-    if (contactSelected && selectedContact) {
-      setSkip(0);
-    }
-  });
-
-  // const getHistory = async (userPhonenum, contactNumber) => {
-  //   const history = await getContactHistory(userPhonenum, contactNumber);
-  //   setMessageHist(history.data);
-  // };
   // useEffect(() => {
   //   if (contactSelected && selectedContact) {
-  //     getHistory(userPhonenum, selectedContact.contactNumber);
+  //     setSkip(0);
   //   }
   // });
+
+  const getHistory = async (userPhonenum, contactNumber) => {
+    const history = await getContactHistory(userPhonenum, contactNumber);
+    setMessageHist(history.data);
+  };
+  useEffect(() => {
+    if (contactSelected && selectedContact) {
+      getHistory(userPhonenum, selectedContact.contactNumber);
+    }
+  }, [contactSelected]);
 
   const time = () => {
     const date = new Date();
@@ -64,9 +66,11 @@ function ChatContent({
   const send = async (message) => {
     await socket.emit("send-message", message);
   };
+
   useEffect(() => {
     socket.on("receive-message", (data) => {});
-  }, [socket]);
+    setReceiveMsg(false);
+  }, []);
   const sendMessage = () => {
     setSkip(0);
     setSendMsg((prev) => prev + 1);
@@ -134,11 +138,11 @@ function ChatContent({
             >
               {/*Put the scroll bar always on the bottom*/}
               <InfiniteScroll
-                dataLength={history.length}
+                dataLength={messageHist.length}
                 next={() => setSkip((prev) => prev + 10)}
                 style={{ display: "flex", flexDirection: "column-reverse" }}
                 inverse={true}
-                hasMore={hasMore}
+                hasMore={true}
                 loader={<h4>Loading...</h4>}
                 scrollableTarget="scrollableDiv"
               >
@@ -150,7 +154,7 @@ function ChatContent({
                     contactNumber={selectedContact.contactNumber}
                     contactName={selectedContact.contactName}
                     animationDelay={0 + 1}
-                    history={history}
+                    history={messageHist}
                     setMessageHist={setMessageHist}
                     contactImage={selectedContact.contactData.profilePic}
                     userImage={userLogin.profilePic}

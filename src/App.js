@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.scss";
 import Nav from "./components/nav/Nav";
 import ChatBody from "./components/chatBody/ChatBody";
@@ -10,6 +10,12 @@ function App() {
   const [chatRoom, setChatRoom] = useState(false);
   const [socket, setSocket] = useState();
   const [contactSelected, setContactSelected] = useState(false);
+
+  useEffect(() => {
+    if (userPhonenum) {
+      socket.on("receive-message", (data) => {});
+    }
+  }, []);
 
   return (
     <div className="__main">
