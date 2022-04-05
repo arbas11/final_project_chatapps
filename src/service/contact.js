@@ -1,18 +1,23 @@
 import axios from "axios";
 
-const GETALLCONTACTUSRL = "http://localhost:3001/api/contact/getallcontact";
-// const GETONECONTACTURL = "http://localhost:3001/api/contact/getonecontact";
-const ADDCONTACTURL = "http://localhost:3001/api/contact/addcontact";
-const DELETEONECONTACTURL =
-  "http://localhost:3001/api/contact/deleteonecontact";
-const UPDATECONTACTNAMEURL =
-  "http://localhost:3001/api/contact/updatecontactname";
+const GETALLCONTACTURL = process.env.REACT_APP_GET_ALL_CONTACT_URL;
+const ADDCONTACTURL = process.env.REACT_APP_ADD_CONTACT_URL;
+const DELETEONECONTACTURL = process.env.REACT_APP_DELETE_ONE_CONTACT_URL;
+const UPDATECONTACTNAMEURL = process.env.REACT_APP_UPDATE_CONTACT_NAME_URL;
 
-export const getUserAllContactData = async (userPhonenum) => {
+export const getUserAllContactData = async (userEmail, token) => {
   try {
-    const response = await axios.post(GETALLCONTACTUSRL, {
-      userPhonenum: userPhonenum,
-    });
+    const response = await axios.post(
+      GETALLCONTACTURL,
+      {
+        userEmail: userEmail,
+      },
+      {
+        headers: {
+          authorization: "Bearer " + token,
+        },
+      }
+    );
     return response.data;
   } catch (e) {
     console.log("error dari service axios", e);
@@ -20,16 +25,25 @@ export const getUserAllContactData = async (userPhonenum) => {
 };
 
 export const addContactToUser = async (
-  userPhonenum,
-  contactNumber,
-  contactName
+  userEmail,
+  contactEmail,
+  contactName,
+  token
 ) => {
   try {
-    const response = await axios.post(ADDCONTACTURL, {
-      userPhonenum: userPhonenum,
-      contactNumber: contactNumber,
-      contactName: contactName,
-    });
+    const response = await axios.post(
+      ADDCONTACTURL,
+      {
+        userEmail: userEmail,
+        contactEmail: contactEmail,
+        contactName: contactName,
+      },
+      {
+        headers: {
+          authorization: "Bearer " + token,
+        },
+      }
+    );
     return response;
   } catch (error) {
     if (error.response) {
@@ -46,25 +60,42 @@ export const addContactToUser = async (
   }
 };
 
-export const deleteContact = (userNumber, contactNumber, userId) => {
-  return axios.post(DELETEONECONTACTURL, {
-    userNumber: userNumber,
-    contactNumber: contactNumber,
-    contactId: userId,
-  });
+export const deleteContact = (userEmail, contactEmail, userId, token) => {
+  return axios.post(
+    DELETEONECONTACTURL,
+    {
+      userEmail: userEmail,
+      contactEmail: contactEmail,
+      contactId: userId,
+    },
+    {
+      headers: {
+        authorization: "Bearer " + token,
+      },
+    }
+  );
 };
 
 export const updateContactData = async (
-  userPhonenum,
-  contactNumber,
-  newContactName
+  userEmail,
+  contactEmail,
+  newContactName,
+  token
 ) => {
   try {
-    const response = await axios.post(UPDATECONTACTNAMEURL, {
-      userPhonenum: userPhonenum,
-      contactNumber: contactNumber,
-      newContactName: newContactName,
-    });
+    const response = await axios.post(
+      UPDATECONTACTNAMEURL,
+      {
+        userEmail: userEmail,
+        contactEmail: contactEmail,
+        newContactName: newContactName,
+      },
+      {
+        headers: {
+          authorization: "Bearer " + token,
+        },
+      }
+    );
     console.log(response);
     return response.data;
   } catch (error) {

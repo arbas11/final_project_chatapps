@@ -1,13 +1,13 @@
 import axios from "axios";
 
-const GETUSERURL = "http://localhost:3001/api/user/getuser";
-const CREATEUSERURL = "http://localhost:3001/api/user/createuser";
-const UPDATEUSERDATAURL = "http://localhost:3001/api/user/updatenameandpic";
+const GETUSERURL = process.env.REACT_APP_GET_USER_URL;
+const CREATEUSERURL = process.env.REACT_APP_CREATE_USER_URL;
+const UPDATEUSERDATAURL = process.env.REACT_APP_UPDATE_USER_DATA_URL;
 
-export const createUser = async (userPhonenum, displayName) => {
+export const createUser = async (userEmail, displayName) => {
   try {
     const response = await axios.post(CREATEUSERURL, {
-      userPhonenum: userPhonenum,
+      userEmail: userEmail,
       displayName: displayName,
     });
     return response.data;
@@ -16,16 +16,16 @@ export const createUser = async (userPhonenum, displayName) => {
   }
 };
 
-export const getUserByPhoneNum = async (userPhonenum) => {
+export const getUserByEmail = async (userEmail, token) => {
   try {
     const response = await axios.post(
       GETUSERURL,
       {
-        userPhonenum: userPhonenum,
+        userEmail: userEmail,
       },
       {
         headers: {
-          Authorization: "Bearer ",
+          Authorization: "Bearer " + token,
         },
       }
     );
@@ -36,18 +36,27 @@ export const getUserByPhoneNum = async (userPhonenum) => {
 };
 
 export const updateUserData = async (
-  userPhonenum,
+  userEmail,
   newDisplayName,
   newProfilePic,
-  newUserStatus
+  newUserStatus,
+  token
 ) => {
   try {
-    const response = await axios.post(UPDATEUSERDATAURL, {
-      userPhonenum: userPhonenum,
-      displayName: newDisplayName,
-      profilePic: newProfilePic,
-      userStatus: newUserStatus,
-    });
+    const response = await axios.post(
+      UPDATEUSERDATAURL,
+      {
+        userEmail: userEmail,
+        displayName: newDisplayName,
+        profilePic: newProfilePic,
+        userStatus: newUserStatus,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
     console.log(response);
     return response.data;
   } catch (error) {

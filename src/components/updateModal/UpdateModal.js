@@ -35,7 +35,7 @@ function UpdateModal({
                 placeholder={data.second}
                 required
                 onChange={(e) => setSecondValue(e.target.value)}
-                value={secondValue}
+                value={secondValue ?? ""}
               />
             </div>
             <div className="search_wrap new-contact-input">
@@ -44,7 +44,7 @@ function UpdateModal({
                 placeholder={data.third}
                 required
                 onChange={(e) => setThirdValue(e.target.value)}
-                value={thirdValue}
+                value={thirdValue ?? ""}
               />
             </div>
           </>

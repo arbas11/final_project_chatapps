@@ -1,12 +1,20 @@
 import axios from "axios";
 
-const LOGOUTURL = "http://localhost:3001/api/logout";
+const LOGOUTURL = process.env.REACT_APP_LOG_OUT_URL;
 
-export const updateIsLogin = async (userNumber) => {
+export const updateIsLogout = async (userEmail, token) => {
   try {
-    const response = await axios.post(LOGOUTURL, {
-      userNumber: userNumber,
-    });
+    const response = await axios.post(
+      LOGOUTURL,
+      {
+        userEmail: userEmail,
+      },
+      {
+        headers: {
+          authorization: "Bearer " + token,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     if (error.response) {

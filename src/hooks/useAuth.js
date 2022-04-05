@@ -8,7 +8,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 
-const LOGINURL = "http://localhost:3001/api/login";
+const LOGINURL = process.env.REACT_APP_LOGIN_URL;
 
 const firebaseConfig = {
   apiKey: "AIzaSyCLjMssma2A0VgITiHpUzCbCjFsnlLqNns",
@@ -26,13 +26,12 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 export default function useUserAuth() {
-  const [userLogin, setUserLogin] = useState({});
-  const [isAuth, setIsAuth] = useState(
-    false || window.localStorage.getItem("auth") === "true"
-  );
+  console.log("use auth rerender");
+  const [userLogin, setUserLogin] = useState();
+  const [isAuth, setIsAuth] = useState(false);
   const [token, setToken] = useState("");
 
-  const reqUser = async (userEmail, displayName, profilePic) => {
+  const reqUser = async (userEmail, displayName, profilePic, token) => {
     try {
       const res = await axios.post(
         LOGINURL,
@@ -43,48 +42,52 @@ export default function useUserAuth() {
         },
         {
           headers: {
-            Authorization: "Bearer " + token,
+            authorization: "Bearer " + token,
           },
         }
       );
-      console.log("res dari axios request user", res.data);
       setUserLogin(res.data);
     } catch (error) {
       if (error.response) {
         console.log(error.response.data);
       }
     }
-    return;
   };
-  console.log("is auth dari use auth", isAuth);
   useEffect(() => {
     onAuthStateChanged(auth, (userCred) => {
       if (userCred) {
-        setIsAuth(true);
-        window.localStorage.setItem("auth", "true");
+        const { email, displayName, photoURL } = userCred;
         userCred.getIdToken().then((token) => {
           setToken(token);
-          console.log("dari get token", token);
+          if (token) {
+            // sessionStorage.setItem("auth", "true");
+          }
+          reqUser(email, displayName, photoURL, token);
         });
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (userLogin) {
+      if (userLogin.message) {
+        setIsAuth(false);
+      } else {
+        setIsAuth(true);
+      }
+    }
+  }, [userLogin]);
   const signInWithGoogle = () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        if (result) {
-          setIsAuth(true);
-          window.localStorage.setItem("auth", "true");
-        }
-        const displayName = result.user.displayName;
-        const userEmail = result.user.email;
-        const profilePic = result.user.photoURL;
-        reqUser(userEmail, displayName, profilePic);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    signInWithPopup(auth, provider).catch((error) => {
+      console.log(error);
+    });
   };
 
-  return { signInWithGoogle, token, auth, userLogin };
+  return {
+    signInWithGoogle,
+    token,
+    isAuth,
+    setIsAuth,
+    userLogin,
+  };
 }

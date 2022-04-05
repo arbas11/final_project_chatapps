@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/bootstrap.scss";
 import "./chatList.scss";
+
+import { getUserAllContactData } from "../../service/contact";
+
 import ChatListItems from "./ChatListItems";
 import NewContactModal from "../NewContactModal/NewContactModal";
-import { getUserAllContactData } from "../../service/contact";
 import AlertModal from "../alertModal/AlertModal";
 
 function ChatList({
-  userPhonenum,
+  token,
+  userEmail,
   contactSelected,
   setContactSelected,
   setSelectedContact,
@@ -18,15 +21,15 @@ function ChatList({
   const [modalAddSuccess, setModalAddSuccess] = useState(false);
   const [contactAddData, setContactAddData] = useState({});
 
-  const getContacts = async (userNum) => {
-    const data = await getUserAllContactData(userNum);
+  const getContacts = async (userNum, token) => {
+    const data = await getUserAllContactData(userNum, token);
     setAllContacts(data);
   };
   useEffect(() => {
-    if (userPhonenum) {
-      getContacts(userPhonenum);
+    if (userEmail) {
+      getContacts(userEmail, token);
     }
-  }, [userPhonenum, openNewContactModal, contactSelected]);
+  }, [userEmail, openNewContactModal, contactSelected, token]);
 
   return (
     <div className="main__chatlist">
@@ -37,7 +40,8 @@ function ChatList({
       <NewContactModal
         openNewContactModal={openNewContactModal}
         setOpenNewContactModal={setOpenNewContactModal}
-        userPhonenum={userPhonenum}
+        userEmail={userEmail}
+        token={token}
         setContactAddData={setContactAddData}
         setModalAddSuccess={setModalAddSuccess}
       />
@@ -72,38 +76,39 @@ function ChatList({
         </div>
       </div>
       <div className="chatlist__items">
-        {allContacts
-          .filter((v) => {
-            if (searchTerm === "") {
-              return v;
-            } else {
-              return v.contactName
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase());
-            }
-          })
-          .map((v, index) => (
-            <div key={index}>
-              <div
-                onClick={() => {
-                  setContactSelected(true);
-                  setSelectedContact(v);
-                }}
-              >
-                <ChatListItems
-                  index={index}
-                  name={
-                    v.contactName ? v.contactName : v.contactData.displayName
-                  }
-                  image={v.contactData.profilePic}
-                  status={v.contactData.status}
-                  animationDelay={0 + 1}
-                  active={false ? "active" : ""}
-                  isOnline={v.contactData.isOnline ? "active" : ""}
-                />
+        {allContacts &&
+          allContacts
+            .filter((v) => {
+              if (searchTerm === "") {
+                return v;
+              } else {
+                return v.contactName
+                  .toLowerCase()
+                  .includes(searchTerm.toLowerCase());
+              }
+            })
+            .map((v, index) => (
+              <div key={index}>
+                <div
+                  onClick={() => {
+                    setContactSelected(true);
+                    setSelectedContact(v);
+                  }}
+                >
+                  <ChatListItems
+                    index={index}
+                    name={
+                      v.contactName ? v.contactName : v.contactData.displayName
+                    }
+                    image={v.contactData.profilePic}
+                    status={v.contactData.status}
+                    animationDelay={0 + 1}
+                    active={false ? "active" : ""}
+                    isOnline={v.contactData.isOnline ? "active" : ""}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
       </div>
     </div>
   );

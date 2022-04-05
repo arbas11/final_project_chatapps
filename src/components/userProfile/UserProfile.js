@@ -1,14 +1,16 @@
 import React, { useState } from "react";
-import { updateIsLogin } from "../../service/auth";
+import { updateIsLogout } from "../../service/auth";
 import { deleteContact, updateContactData } from "../../service/contact";
-import { getUserByPhoneNum, updateUserData } from "../../service/user";
+import { getUserByEmail, updateUserData } from "../../service/user";
 import AlertModal from "../alertModal/AlertModal";
 import UpdateModal from "../updateModal/UpdateModal";
 import "./userProfile.scss";
 
 function UserProfile({
-  userLogin,
-  setUserLogin,
+  token,
+  userData,
+  setUserData,
+  setIsAuth,
   selectedContact,
   setSelectedContact,
   contactSelected,
@@ -20,46 +22,48 @@ function UserProfile({
 
   const [whatToUpdate, setWhatToUpdate] = useState("");
   const [updateUserModal, setUpdateUserModal] = useState(false);
-  const [userNewDisplayName, setUserNewDisplayName] = useState(
-    userLogin.displayName
-  );
-  const [userNewProfilePic, setUserNewProfilePic] = useState(
-    userLogin.profilePic
-  );
-  const [userNewStatus, setUserNewStatus] = useState(userLogin.status);
+  const [userNewDisplayName, setUserNewDisplayName] = useState("");
+  const [userNewProfilePic, setUserNewProfilePic] = useState("");
+  const [userNewStatus, setUserNewStatus] = useState("");
 
   const [updateContactModal, setUdpateContactModal] = useState(false);
-  const [newContactName, setNewContactName] = useState(
-    selectedContact.contactName
-  );
+  const [newContactName, setNewContactName] = useState("");
 
   const handleUserUpdate = async () => {
     await updateUserData(
-      userLogin.userPhonenum,
+      userData.userEmail,
       userNewDisplayName,
       userNewProfilePic,
-      userNewStatus
+      userNewStatus,
+      token
     );
-    const newUserData = await getUserByPhoneNum(userLogin.userPhonenum);
-    setUserLogin(newUserData);
+    const newUserData = await getUserByEmail(userData.userEmail, token);
+    setUserData(newUserData);
     setUpdateUserModal(false);
+    setUserNewProfilePic("");
+    setUserNewDisplayName("");
+    setUserNewStatus("");
   };
 
   const handleContactUpdate = async () => {
     const newContactData = await updateContactData(
-      userLogin.userPhonenum,
-      selectedContact.contactNumber,
-      newContactName
+      userData.userEmail,
+      selectedContact.contactEmail,
+      newContactName,
+      token
     );
     setSelectedContact(newContactData);
     setUdpateContactModal(false);
+    setNewContactName("");
+    setContactSelected(false);
   };
+
   const toggleInfo = (e) => {
     setToggleOpen(!toggeOpen);
   };
 
-  const handleDelete = (userNum, contactNum, userId) => {
-    deleteContact(userNum, contactNum, userId)
+  const handleDelete = (userEmail, contactEmail, userId) => {
+    deleteContact(userEmail, contactEmail, userId, token)
       .then(function (response) {
         setError(false);
         setTimeout(() => {
@@ -75,7 +79,9 @@ function UserProfile({
   };
 
   const handleLogout = async () => {
-    await updateIsLogin(userLogin.userPhonenum);
+    window.sessionStorage.removeItem("auth");
+    setIsAuth(false);
+    await updateIsLogout(userData.userEmail, token);
   };
   return (
     <div className="main__userprofile">
@@ -116,10 +122,14 @@ function UserProfile({
         onClick={
           contactSelected
             ? () => {
+                setNewContactName(selectedContact.contactName);
                 setWhatToUpdate("contact");
                 setUdpateContactModal(true);
               }
             : () => {
+                setUserNewProfilePic(userData.profilePic);
+                setUserNewDisplayName(userData.displayName);
+                setUserNewStatus(userData.status);
                 setWhatToUpdate("user");
                 setUpdateUserModal(true);
               }
@@ -130,7 +140,7 @@ function UserProfile({
             src={
               contactSelected
                 ? selectedContact.contactData.profilePic
-                : userLogin.profilePic
+                : userData.profilePic
             }
             alt="profile"
           />
@@ -138,12 +148,12 @@ function UserProfile({
         <h4>
           {contactSelected
             ? selectedContact.contactData.displayName
-            : userLogin.displayName}
+            : userData.displayName}
         </h4>
         <p>
           {contactSelected
             ? selectedContact.contactData.status
-            : userLogin.status}
+            : userData.status}
         </p>
       </div>
       <div className={toggeOpen ? "profile__card open" : "profile__card"}>
@@ -152,11 +162,11 @@ function UserProfile({
           <i className="fa fa-angle-down"></i>
         </div>
         <div className="card__content">
-          <div>Phone Number:</div>
+          <div>Email:</div>
           <div>
             {contactSelected
-              ? selectedContact.contactNumber
-              : userLogin.userPhonenum}
+              ? selectedContact.contactEmail
+              : userData.userEmail}
           </div>
         </div>
         <div className="card__content">
@@ -164,7 +174,7 @@ function UserProfile({
           <div>
             {contactSelected
               ? selectedContact.contactData.status
-              : userLogin.status}
+              : userData.status}
           </div>
         </div>
         {contactSelected ? (
@@ -172,9 +182,10 @@ function UserProfile({
             <div
               onClick={() =>
                 handleDelete(
-                  userLogin.userPhonenum,
+                  userData.userEmail,
                   selectedContact.contactNumber,
-                  selectedContact._id
+                  selectedContact._id,
+                  token
                 )
               }
               className="card__content delete-contact"
@@ -201,9 +212,10 @@ function UserProfile({
             <div
               onClick={() =>
                 handleLogout(
-                  userLogin.userPhonenum,
+                  userData.userEmail,
                   selectedContact.contactNumber,
-                  selectedContact._id
+                  selectedContact._id,
+                  token
                 )
               }
               className="card__content delete-contact"

@@ -5,9 +5,10 @@ import "../chatList/chatList.scss";
 import { addContactToUser } from "../../service/contact";
 
 function NewContactModal({
+  token,
   openNewContactModal,
   setOpenNewContactModal,
-  userPhonenum,
+  userEmail,
   setContactAddData,
   setModalAddSuccess,
 }) {
@@ -15,9 +16,9 @@ function NewContactModal({
   const [contactDisplayName, setContactDisplayName] = useState("");
   const [error, setError] = useState("");
 
-  const addNewContact = async (userNumber, contactNumber, contactName) => {
-    if (contactNumber && contactName) {
-      await addContactToUser(userNumber, contactNumber, contactName).then(
+  const addNewContact = async (userEmail, contactEmail, contactName, token) => {
+    if (contactEmail && contactName) {
+      await addContactToUser(userEmail, contactEmail, contactName, token).then(
         (response) => {
           if (response.status > 200) {
             setError(response.message);
@@ -43,7 +44,7 @@ function NewContactModal({
         <div className="search_wrap new-contact-input">
           <input
             type="text"
-            placeholder="Contact number"
+            placeholder="add your friend email, to start chat ask them to add you too"
             required
             onChange={(e) => setContactToAdd(e.target.value)}
             value={contactToAdd}
@@ -63,7 +64,7 @@ function NewContactModal({
         <button
           onClick={() => {
             setError("");
-            addNewContact(userPhonenum, contactToAdd, contactDisplayName);
+            addNewContact(userEmail, contactToAdd, contactDisplayName, token);
           }}
           className="btn btn-submit"
         >

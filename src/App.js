@@ -1,31 +1,42 @@
 import React, { useEffect, useState } from "react";
 import "./App.scss";
 import Nav from "./components/nav/Nav";
+import io from "socket.io-client";
 import ChatBody from "./components/chatBody/ChatBody";
 import LoginForm from "./components/login/LoginForm";
+import useUserAuth from "./hooks/useAuth";
 
 function App() {
-  const [userPhonenum, setUserPhonenum] = useState("");
-  const [userLogin, setUserLogin] = useState({});
-  const [chatRoom, setChatRoom] = useState(false);
+  console.log("app rerender");
+  const [userData, setUserData] = useState();
   const [socket, setSocket] = useState();
   const [contactSelected, setContactSelected] = useState(false);
+  const { signInWithGoogle, token, isAuth, setIsAuth, userLogin } =
+    useUserAuth();
 
   useEffect(() => {
-    if (userPhonenum) {
-      socket.on("receive-message", (data) => {});
+    if (userLogin) {
+      setUserData(userLogin);
     }
-  }, []);
+  }, [userLogin]);
+
+  useEffect(() => {
+    if (userLogin) {
+      const userEmail = userLogin.userEmail;
+      setSocket(io("http://localhost:3001", { query: { userEmail } }));
+    }
+  }, [userLogin]);
 
   return (
     <div className="__main">
-      {chatRoom ? (
+      {isAuth ? (
         <>
           <Nav setContactSelected={setContactSelected} />
           <ChatBody
-            userPhonenum={userPhonenum}
-            userLogin={userLogin}
-            setUserLogin={setUserLogin}
+            userData={userData}
+            setUserData={setUserData}
+            setIsAuth={setIsAuth}
+            token={token}
             socket={socket}
             setSocket={setSocket}
             contactSelected={contactSelected}
@@ -33,14 +44,7 @@ function App() {
           />
         </>
       ) : (
-        <LoginForm
-          userLogin={userLogin}
-          setUserLogin={setUserLogin}
-          userPhonenum={userPhonenum}
-          setUserPhonenum={setUserPhonenum}
-          setChatRoom={setChatRoom}
-          setSocket={setSocket}
-        />
+        <LoginForm signInWithGoogle={signInWithGoogle} />
       )}
     </div>
   );

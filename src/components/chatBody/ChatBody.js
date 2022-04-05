@@ -5,10 +5,12 @@ import ChatContent from "../chatContent/ChatContent";
 import UserProfile from "../userProfile/UserProfile";
 
 function ChatBody({
-  userPhonenum,
-  userLogin,
-  setUserLogin,
+  userData,
+  setUserData,
+  setIsAuth,
+  token,
   socket,
+  setSocket,
   contactSelected,
   setContactSelected,
 }) {
@@ -17,22 +19,27 @@ function ChatBody({
   return (
     <div className="main__chatbody">
       <ChatList
-        userPhonenum={userPhonenum}
+        token={token}
+        userEmail={userData.userEmail}
         contactSelected={contactSelected}
         setSelectedContact={setSelectedContact}
         setContactSelected={setContactSelected}
       />
       <ChatContent
-        userLogin={userLogin}
-        userPhonenum={userPhonenum}
+        token={token}
+        userData={userData}
+        userEmail={userData.userEmail}
         selectedContact={selectedContact}
         setSelectedContact={setSelectedContact}
         contactSelected={contactSelected}
         socket={socket}
       />
       <UserProfile
-        userLogin={userLogin}
-        setUserLogin={setUserLogin}
+        token={token}
+        userEmail={userData.userEmail}
+        userData={userData}
+        setUserData={setUserData}
+        setIsAuth={setIsAuth}
         selectedContact={selectedContact}
         setSelectedContact={setSelectedContact}
         contactSelected={contactSelected}
