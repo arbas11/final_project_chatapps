@@ -22,64 +22,10 @@ function ChatContent({
   const [currentContactEmail, setCurrentContactEmail] = useState("");
   console.log(currentContactEmail, "curren email");
 
-  const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(false);
-  // const [history, setHistory] = useState([]);
-  const [hasMore, setHasMore] = useState(false);
+  const [loading] = useState(true);
+  const [hasMore] = useState(false);
 
-  const [sendMsg, setSendMsg] = useState(0);
-  // const [receiveMsg, setReceiveMsg] = useState(true);
-  // const [query, setQuery] = useState(10);
-  const [skip, setSkip] = useState(0);
-
-  // const { history, hasMore, loading, newHistory, setHistory } = useHistoryQuery(
-  //   userPhonenum,
-  //   selectedContact.contactNumber,
-  //   query,
-  //   skip,
-  //   sendMsg
-  // );
-
-  // const reqHistory = async (userNumber, contactNumber, query, skip) => {
-  //   setLoading(true);
-  //   setError(false);
-  //   let cancel;
-  //   await axios
-  //     .post(
-  //       SHOWHISTORYURL,
-  //       {
-  //         userNumber: userNumber,
-  //         contactNumber: contactNumber,
-  //         q: query,
-  //         page: skip,
-  //       },
-  //       { cancelToken: new axios.CancelToken((c) => (cancel = c)) }
-  //     )
-  //     .then((res) => {
-  //       setHistory((prevHistory) => {
-  //         return [...new Set([...prevHistory, ...res.data.map((h) => h)])];
-  //       });
-  //       setHasMore(res.data.length > 0);
-  //       setLoading(false);
-  //     })
-  //     .catch((e) => {
-  //       if (axios.isCancel(e)) return;
-  //       setError(true);
-  //     });
-  //   return () => cancel();
-  // };
-
-  // useEffect(() => {
-  //   if (selectedContact.contactNumber) {
-  //     reqHistory(
-  //       userLogin.userPhonenum,
-  //       selectedContact.contactNumber,
-  //       query,
-  //       skip,
-  //       sendMsg
-  //     );
-  //   }
-  // }, [query, selectedContact, sendMsg, userLogin]);
+  const [sendMsg] = useState(0);
 
   useEffect(() => {
     console.log("set msg hist []");
@@ -97,7 +43,7 @@ function ChatContent({
       getHistory(userEmail, selectedContact.contactEmail, token);
       setCurrentContactEmail(selectedContact.contactEmail);
     }
-  }, [contactSelected, selectedContact, sendMsg]);
+  }, [contactSelected, selectedContact, sendMsg, token, userEmail]);
 
   const time = () => {
     const date = new Date();
@@ -128,13 +74,9 @@ function ChatContent({
     if (currentRecMsg.author === currentContactEmail) {
       setMessageHist((prev) => [...prev, currentRecMsg]);
     }
-    console.log("author", currentRecMsg.author);
-    console.log("current email", currentContactEmail);
-    console.log("msg receive recMsg", currentRecMsg);
-  }, [currentRecMsg]);
+  }, [currentRecMsg, currentContactEmail]);
 
   const sendMessage = async () => {
-    setSkip(0);
     if (currentMessage !== "" && currentMessage !== " ") {
       const capsMsg = capitalise(currentMessage);
       const messageData = {
@@ -203,7 +145,7 @@ function ChatContent({
               <InfiniteScroll
                 dataLength={messageHist.length}
                 next={() => {
-                  setSkip((prev) => prev + 10);
+                  console.log("next");
                 }}
                 style={{ display: "flex", flexDirection: "column-reverse" }}
                 inverse={true}
