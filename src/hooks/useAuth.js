@@ -26,7 +26,6 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 export default function useUserAuth() {
-  console.log("use auth rerender");
   const [userLogin, setUserLogin] = useState();
   const [isAuth, setIsAuth] = useState(false);
   const [token, setToken] = useState("");
@@ -49,7 +48,6 @@ export default function useUserAuth() {
       setUserLogin(res.data);
     } catch (error) {
       if (error.response) {
-        console.log(error.response.data);
       }
     }
   };
@@ -60,7 +58,6 @@ export default function useUserAuth() {
         userCred.getIdToken().then((token) => {
           setToken(token);
           if (token) {
-            // sessionStorage.setItem("auth", "true");
           }
           reqUser(email, displayName, photoURL, token);
         });

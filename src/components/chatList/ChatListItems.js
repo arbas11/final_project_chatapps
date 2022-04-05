@@ -10,17 +10,6 @@ function ChatListItems({
   animationDelay,
   active,
 }) {
-  // const selectChat = (e) => {
-  //   for (
-  //     let index = 0;
-  //     index < e.currentTarget.parentNode.children.length;
-  //     index++
-  //   ) {
-  //     e.currentTarget.parentNode.children[index].classList.remove("active");
-  //   }
-  //   e.currentTarget.classList.add("active");
-  // };
-
   return (
     <div style={{ animationDelay: `0.1` }} className={`chatlist__item`}>
       <Avatar

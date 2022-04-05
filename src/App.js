@@ -6,8 +6,8 @@ import ChatBody from "./components/chatBody/ChatBody";
 import LoginForm from "./components/login/LoginForm";
 import useUserAuth from "./hooks/useAuth";
 
+const socketUrl = process.env.REACT_APP_SOCKET_URL;
 function App() {
-  console.log("app rerender");
   const [userData, setUserData] = useState();
   const [socket, setSocket] = useState();
   const [contactSelected, setContactSelected] = useState(false);
@@ -23,7 +23,11 @@ function App() {
   useEffect(() => {
     if (userLogin) {
       const userEmail = userLogin.userEmail;
-      setSocket(io("http://localhost:3001", { query: { userEmail } }));
+      setSocket(
+        io(socketUrl, {
+          query: { userEmail },
+        })
+      );
     }
   }, [userLogin]);
 

@@ -20,7 +20,6 @@ function ChatContent({
   const [currentRecMsg, setCurrentRecMsg] = useState({});
   const [messageHist, setMessageHist] = useState([]);
   const [currentContactEmail, setCurrentContactEmail] = useState("");
-  console.log(currentContactEmail, "curren email");
 
   const [loading] = useState(true);
   const [hasMore] = useState(false);
@@ -28,7 +27,6 @@ function ChatContent({
   const [sendMsg] = useState(0);
 
   useEffect(() => {
-    console.log("set msg hist []");
     setMessageHist([]);
   }, [selectedContact]);
 
@@ -39,7 +37,6 @@ function ChatContent({
 
   useEffect(() => {
     if (contactSelected && selectedContact) {
-      console.log("get history render");
       getHistory(userEmail, selectedContact.contactEmail, token);
       setCurrentContactEmail(selectedContact.contactEmail);
     }
@@ -66,7 +63,6 @@ function ChatContent({
   useEffect(() => {
     socket.on("receive-message", (data) => {
       setCurrentRecMsg(data);
-      console.log("data dari get callback", data);
     });
   }, [socket]);
 
@@ -89,7 +85,6 @@ function ChatContent({
       };
       await socket.emit("send-message", messageData);
       setMessageHist([...messageHist, messageData]);
-      // send(messageData);
       setCurrentMessage("");
     }
   };
