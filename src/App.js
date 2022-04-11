@@ -5,8 +5,10 @@ import io from "socket.io-client";
 import ChatBody from "./components/chatBody/ChatBody";
 import LoginForm from "./components/login/LoginForm";
 import useUserAuth from "./hooks/useAuth";
+import { baseUrl } from "./service/baseUrl";
 
-const socketUrl = process.env.REACT_APP_SOCKET_URL;
+const socketUrl = baseUrl;
+
 function App() {
   const [userData, setUserData] = useState();
   const [socket, setSocket] = useState();

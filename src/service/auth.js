@@ -1,6 +1,7 @@
 import axios from "axios";
+import { baseUrl } from "./baseUrl";
 
-const LOGOUTURL = process.env.REACT_APP_LOG_OUT_URL;
+const LOGOUTURL = baseUrl + "api/logout";
 
 export const updateIsLogout = async (userEmail, token) => {
   try {

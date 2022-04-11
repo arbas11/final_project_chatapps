@@ -1,8 +1,9 @@
 import axios from "axios";
+import { baseUrl } from "./baseUrl";
 
-const GETUSERURL = process.env.REACT_APP_GET_USER_URL;
-const CREATEUSERURL = process.env.REACT_APP_CREATE_USER_URL;
-const UPDATEUSERDATAURL = process.env.REACT_APP_UPDATE_USER_DATA_URL;
+const GETUSERURL = baseUrl + "api/user/getuser";
+const CREATEUSERURL = baseUrl + "api/user/createuser";
+const UPDATEUSERDATAURL = baseUrl + "api/user/updatenameandpic";
 
 export const createUser = async (userEmail, displayName) => {
   try {

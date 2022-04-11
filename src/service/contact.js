@@ -1,9 +1,10 @@
 import axios from "axios";
+import { baseUrl } from "./baseUrl";
 
-const GETALLCONTACTURL = process.env.REACT_APP_GET_ALL_CONTACT_URL;
-const ADDCONTACTURL = process.env.REACT_APP_ADD_CONTACT_URL;
-const DELETEONECONTACTURL = process.env.REACT_APP_DELETE_ONE_CONTACT_URL;
-const UPDATECONTACTNAMEURL = process.env.REACT_APP_UPDATE_CONTACT_NAME_URL;
+const GETALLCONTACTURL = baseUrl + "api/contact/getallcontact";
+const ADDCONTACTURL = baseUrl + "api/contact/addcontact";
+const DELETEONECONTACTURL = baseUrl + "api/contact/deleteonecontact";
+const UPDATECONTACTNAMEURL = baseUrl + "api/contact/updatecontactname";
 
 export const getUserAllContactData = async (userEmail, token) => {
   try {

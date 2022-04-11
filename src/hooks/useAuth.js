@@ -7,8 +7,9 @@ import {
   signInWithPopup,
   onAuthStateChanged,
 } from "firebase/auth";
+import { baseUrl } from "../service/baseUrl";
 
-const LOGINURL = process.env.REACT_APP_LOGIN_URL;
+const LOGINURL = baseUrl + "api/login";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCLjMssma2A0VgITiHpUzCbCjFsnlLqNns",
